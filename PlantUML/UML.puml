@@ -1,0 +1,154 @@
+@startuml
+skinparam groupInheritance 2
+
+class first {
+  + virtual void log() = 0
+}
+note top of first : 最初始的抽象类，后面的类都派生于它，只有一个虚函数
+
+class auth {
+  # string username
+  # string pass
+  # int user
+  # string password
+
+  + void log_admin()
+  + void log()
+}
+note top of auth : 认证模块，实现用户登录功能(进行登录请求)
+
+class check {
+  - string student_name
+  - string student_email
+  - string student_class
+  - int student_rollNO
+  - string student_passwd
+  - bool found
+
+  + bool check_class(string cla) 
+  + bool check_student(int roll, string pass)
+  + bool check_teacher(int roll, string pass)
+  + string check_subject(int stu_no)
+}
+note top of check : 检查模块，读取数据文件，对如用户登录请求等事件进行合法性检查
+
+class paper {
+  - int each_marks
+  - int total_marks
+  - int total_qes
+  - char question[555]
+  - int time_allowed
+  - char ans[999]
+
+  + void make_paper()
+}
+note left of paper : 试卷模块，实现了老师编写试卷的功能，通过数据文件保存
+
+class date_sheet {
+  # string sub
+  # int day, month, year
+  # string starting_time, ending_time
+
+  + void view_date_sheet()
+}
+note top of date_sheet : 课程表模块，读取数据文件，实现用户查看课程表的功能
+
+class admin{
+  - const string admin_username
+  - const string admin_password
+
+  - string student_name
+  - string student_email
+  - string student_class
+  - int student_rollNO
+
+  - int choice
+  - bool isFound
+  - string Class
+  - int ret
+
+  - string teacher_name
+  - string teacher_email
+  - int teach_Code
+  --制作课程表--
+  + void make_date_sheet() 
+  --添加学生信息--
+  + void add_student() 
+  --添加老师信息--
+  + void add_teacher() 
+  --管理员登录和菜单界面--
+  + void log() 
+  + void login(string user, string pass) 
+}
+note bottom of admin : 管理员模块，继承上述的类，对功能进行了整合，提供管理数据功能
+
+first <|-- admin #line:red;line.bold
+check <|-- admin #line:red;line.bold
+auth <|-- admin #line:red;line.bold
+date_sheet <|-- admin #line:red;line.bold
+
+class teacher{
+  - int choice
+  - int user_record
+  - int check_roll
+  - int ret
+  - int obtained_marks
+
+  --老师登录和菜单界面--
+  + void log()
+  + void login(int user, string passwd)
+
+  --查看学生试卷答案并评分--
+  + void check_paper() 
+}
+note bottom of teacher : 老师模块，提供编试卷、改试卷功能
+
+auth <|-- teacher #line:blue;line.bold
+check <|-- teacher #line:blue;line.bold
+paper <|-- teacher #line:blue;line.bold
+first <|-- teacher #line:blue;line.bold
+date_sheet <|-- teacher #line:blue;line.bold
+
+class student{
+  - int valid
+  - int choice
+  - char answer[256]
+  - int ret
+
+  --学生登录和菜单界面--
+  + void log() 
+  + void login(int user, string pasw) 
+  --学生答题--
+  + void give_paper()
+  --学生查看成绩--
+  + void result() 
+}
+note bottom of student : 学生模块，实现答题、查看成绩功能
+
+auth <|-- student
+check <|-- student
+date_sheet <|-- student
+paper <|-- student
+first <|-- student
+
+package "数据库模块" #DDDDDD{
+  entity date_sheet_txt
+  entity student_txt
+  entity teacher_txt
+  entity paper_txt
+
+  student_txt <|-- check #line.bold
+  teacher_txt <|-- check #line.bold
+
+  date_sheet_txt <|-- admin #line:red;line.bold
+  student_txt <|-- admin #line:red;line.bold
+  teacher_txt <|-- admin #line:red;line.bold
+
+  paper_txt <|-- teacher #line:blue;line.bold
+
+  paper_txt <|-- student
+  date_sheet_txt <|-- student
+
+}
+
+@enduml

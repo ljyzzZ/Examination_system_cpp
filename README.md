@@ -1,1 +1,2 @@
-# Examination_system_cpp
+# Examination system C++
+A exam portal in c++ using file handling and oop concept
